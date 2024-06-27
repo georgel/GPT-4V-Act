@@ -135,7 +135,7 @@ app.whenReady().then(async () => {
 
     // Save the image with unique name
     await fs.writeFile(`dataset/${screenshotFilename}`, image.toPNG());
-    
+
     let coco = JSON.parse(await fs.readFile('dataset/_annotations.coco.json'));
     const image_id = Math.max(...coco.images.map(({ id }) => id), 0) + 1;
     const annotations_id = Math.max(...coco.annotations.map(({ id }) => id), 0) + 1;
@@ -143,10 +143,10 @@ app.whenReady().then(async () => {
     let annotations = savedData.reduce((all, { bboxs }, index) => {
       let bbox_annotations = bboxs.map((bbox, bboxIndex) => {
         return {
-          id: index + annotations_id + bboxIndex, 
+          id: index + annotations_id + bboxIndex,
           image_id,
           category_id: 0,
-          bbox, 
+          bbox,
           area: bbox[2] * bbox[3],
           segmentation: [],
           iscrowd: 0
@@ -154,16 +154,16 @@ app.whenReady().then(async () => {
       });
       return all.concat(bbox_annotations);
     }, []);
-  
+
     coco.annotations = coco.annotations.concat(annotations);
-    
+
     // update coco image format for labeling
-    let cocoImageFormat = { 
+    let cocoImageFormat = {
       id: image_id,
       width,
       height,
       file_name: screenshotFilename, // updated filename
-      license: 1, 
+      license: 1,
       date_captured: new Date()
     };
 
@@ -224,7 +224,7 @@ app.whenReady().then(async () => {
   });
 
   let currentTask;
-  
+
   ipcMain.on('send', async (event, text) => {
     currentTask = text;
     await screenshot();
@@ -257,12 +257,12 @@ app.whenReady().then(async () => {
               console.log(`clicking ${JSON.stringify(labelData[data.nextAction.element])}`);
               let { x, y } = labelData[data.nextAction.element];
               webview.sendInputEvent({
-                type: 'mouseDown', 
+                type: 'mouseDown',
                 x, y,
                 clickCount: 1
               });
               webview.sendInputEvent({
-                type: 'mouseUp', 
+                type: 'mouseUp',
                 x, y,
                 clickCount: 1
               });
@@ -271,23 +271,23 @@ app.whenReady().then(async () => {
               console.log(`typing ${data.nextAction.text} into ${JSON.stringify(labelData[data.nextAction.element])}`);
               let { x, y } = labelData[data.nextAction.element];
               webview.sendInputEvent({
-                type: 'mouseDown', 
+                type: 'mouseDown',
                 x, y,
                 clickCount: 1
               });
               webview.sendInputEvent({
-                type: 'mouseUp', 
+                type: 'mouseUp',
                 x, y,
                 clickCount: 1
               });
 
               for(let char of data.nextAction.text) {
                 webview.sendInputEvent({
-                  type: 'char', 
+                  type: 'char',
                   keyCode: char
                 });
               }
-              
+
               break;
             }
           default:
