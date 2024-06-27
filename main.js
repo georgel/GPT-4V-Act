@@ -290,6 +290,17 @@ app.whenReady().then(async () => {
 
               break;
             }
+            case "scroll":
+              console.log('scrolling the webview down');
+              webview.sendInputEvent({
+                type: 'mouseWheel',
+                x: 0,          // x coordinate of the mouse pointer
+                y: 0,          // y coordinate of the mouse pointer
+                deltaX: 0,     // Horizontal scroll amount
+                deltaY: -500,  // Vertical scroll amount (negative for scrolling down)
+                canScroll: true // Ensure the event allows scrolling
+              });
+              break;
           default:
             console.log(`unknown action ${JSON.stringify(data.nextAction)}`);
             break;
